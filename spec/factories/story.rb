@@ -1,6 +1,6 @@
 FactoryBot.define do
   factory :story do
-    title { FFaker::Lorem.words(2) }
+    title { FFaker::Lorem.Lorem.sentence(2) }
 
     body { FFaker::Lorem.sentence(4) }
     association(:user)
