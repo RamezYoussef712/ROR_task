@@ -28,6 +28,10 @@ module Api
         end
       end
 
+      def top_stories
+        stories = paginated_resource(Story.top_stories)
+        render json: stories
+      end
 
       def destroy
         Story.find(params[:id]).destroy!
