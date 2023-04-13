@@ -5,3 +5,7 @@
 #
 #   movies = Movie.create([{ name: "Star Wars" }, { name: "Lord of the Rings" }])
 #   Character.create(name: "Luke", movie: movies.first)
+if Rails.env.devlopment?
+  FactoryBot.create_list(:story, 50000)
+  FactoryBot.create_list(:story, 20000)
+end
