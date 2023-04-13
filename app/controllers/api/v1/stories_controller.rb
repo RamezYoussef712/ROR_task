@@ -1,6 +1,8 @@
 module Api
   module V1
     class StoriesController < ApplicationController
+      before_action :find_targeted_story, only: [:review]
+
       def index
         user = User.find(params[:user_id])
 
@@ -33,6 +35,16 @@ module Api
         render json: stories
       end
 
+      def review
+        review = @story.reviews.build(review_params)
+        if review.save
+          render json: review, status: :created
+        else
+          render json: { error: review.errors.full_messages }, status: :unprocessable_entity
+        end
+
+      end
+
       def destroy
         Story.find(params[:id]).destroy!
 
@@ -43,6 +55,21 @@ module Api
 
       def story_params
         params.require(:story).permit(:title, :body)
+      end
+
+      def find_targeted_story
+        if params[:id].present?
+          @story = Story.find(params[:id])
+          if @story.nil?
+            render json: { error: "cant found that story" }, status: :not_found
+          end
+        else
+          render json: { error: "pls provide a n id param" }, status: :bad_request
+        end
+      end
+
+      def review_params
+        params.require(:review).permit(:rate, :comment, :user_id)
       end
 
       def paginated_resource(resource)
