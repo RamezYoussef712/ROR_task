@@ -2,7 +2,15 @@ module Api
   module V1
     class StoriesController < ApplicationController
       def index
-        render json: Story.all
+        user = User.find(params[:user_id])
+
+        render json: { message: 'user not found' }, status: :not_found unless user
+        stories = user.stories
+        if stories.empty?
+          render json: { message: 'user has no stories ' }, status: :not_found
+        else
+          render json: paginated_resource(stories)
+        end
       end
 
       def create
@@ -20,6 +28,7 @@ module Api
         end
       end
 
+
       def destroy
         Story.find(params[:id]).destroy!
 
@@ -30,6 +39,13 @@ module Api
 
       def story_params
         params.require(:story).permit(:title, :body)
+      end
+
+      def paginated_resource(resource)
+        page = params[:page] || 1
+        per = params[:per] || 10
+
+        resource.page(page).per(per)
       end
     end
   end
